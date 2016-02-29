@@ -1,3 +1,5 @@
+ffjfjyfy
+
 <?php include("header.php"); ?>
 
 <center><h1 style="background-color: #008CB7;">Step:2 Customer Details</h1></center>
