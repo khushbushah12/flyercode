@@ -1,0 +1,141 @@
+<?php
+
+class Database
+{
+
+    public $conn;
+    private $servername = "192.168.100.230";
+    private $username = "astserver";
+    private $password = "123456";
+    private $dbname = "khushbu_Ecommerce";
+
+    function  __construct()
+    {
+
+
+        $this->conn = new mysqli($this->servername, $this->username, $this->password, $this->dbname);
+        if ($this->conn->connect_error) {
+            die("Connection failed: " . $this->conn->connect_error);
+        } else {
+            //echo "connect successfully";
+        }
+    }
+
+    public function  isTableExist($table)
+    {
+
+
+        $result = $this->conn->Query("SHOW TABLES LIKE'" . $table . "'");
+
+        if ($result) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public function executeQuery($query)
+    {
+
+        if ($this->conn->query($query) === TRUE) {
+            echo "TRUE";
+            return true;
+
+        } else {
+            echo "ERROR" . $this->conn->error;
+            return false;
+        }
+    }
+
+
+    public function  select($table, $cond = 1, $other = "")
+    {
+
+        if ($this->isTableExist($table)) {
+            $i = 0;
+            if ($cond != 1) {
+                foreach ($cond as $key => $value) {
+                    $keyvalue[$i++] = $key . " = " . "'" . $value . "'";
+                }
+                $keyvalue = implode(" AND ", $keyvalue);
+                $sql = "SELECT * FROM " . $table . " where " . $keyvalue . " " . $other;
+
+            } else {
+                $sql = "SELECT * FROM " . $table . " " . $other;
+            }
+
+
+            $select_result = $this->conn->query($sql);
+            if ($select_result->num_rows > 0) {
+                if ($select_result->num_rows > 1) {
+                    while ($array = $select_result->fetch_assoc()) {
+                        $temp[] = $array;
+                    }
+                    return $temp;
+                } else {
+                    return $select_result->fetch_assoc();
+                }
+            } else {
+                return 0;
+            }
+
+        } else {
+            echo "NO TABLE FOUND";
+            return false;
+        }
+
+    }
+
+
+
+    public function  search($table, $cond = 1, $other = "")
+    {
+
+
+        if ($this->isTableExist($table)) {
+
+            if ($cond != 1) {
+
+                foreach ($cond as $key => $value) {
+                    $keyvalue[] = $key . " like " . "'%" . $value . "%'";
+                }
+
+                $keyvalue = implode(" OR ", $keyvalue);
+                $sql = "SELECT * FROM " . $table . " where " . $keyvalue . " " . $other;
+
+
+            } else {
+
+                $sql = "SELECT * FROM " . $table . " " . $other;
+
+            }
+
+
+            $t = $this->conn->query($sql);
+
+            if ($t->num_rows > 0) {
+                if ($t->num_rows > 1) {
+                    while ($array = $t->fetch_assoc()) {
+                        $temp[] = $array;
+                    }
+                    return $temp;
+                } else {
+                   $param[]=$t->fetch_assoc();
+                    return $param;
+                }
+            } else {
+                return 0;
+            }
+
+        } else {
+            echo "NO TABLE FOUND";
+            return false;
+        }
+
+    }
+
+
+}
+
+?>
